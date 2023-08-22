@@ -10,14 +10,22 @@ contract Alchemist is ERC721, ERC721URIStorage, Ownable {
     using Counters for Counters.Counter;
 
     Counters.Counter private _tokenIdCounter;
+    uint256 public constant mintPrice = 0.0015 ether;
+    uint256 public totalSupply = 0;
+    uint256 public constant maxSupply = 200;
+    string public constant tokenUri =
+        "ipfs://QmdHjy5RgCZrZwe7e6GesShRihTmmbo93HLDbsMvgb3qfq";
 
     constructor() ERC721("Alchemist", "ALCT") {}
 
-    function safeMint(address to, string memory uri) public onlyOwner {
+    function safeMint() public payable {
+        require(msg.value >= 0.0025 ether, "insufficient amount");
+        require(totalSupply < maxSupply, "all NFTs are minted");
+        totalSupply++;
         uint256 tokenId = _tokenIdCounter.current();
         _tokenIdCounter.increment();
-        _safeMint(to, tokenId);
-        _setTokenURI(tokenId, uri);
+        _safeMint(msg.sender, tokenId);
+        _setTokenURI(tokenId, tokenUri);
     }
 
     // The following functions are overrides required by Solidity.
